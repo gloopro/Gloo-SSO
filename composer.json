@@ -1,0 +1,24 @@
+{
+    "name": "gloo/module-sso",
+    "description": "Add your description here",
+    "type": "magento2-module",
+    "license": [
+        "proprietary"
+    ],
+    "authors":[
+        {
+            "name":"David Umoh",
+            "email":"engineering@gloo.ng"
+        }
+    ],
+    "require": {
+    },
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Gloo\\SSO\\": ""
+        }
+    }
+}
