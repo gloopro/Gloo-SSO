@@ -6,8 +6,6 @@
 
         public function execute()
         {
-            $resultPage = $this->resultPageFactory->create();
-            //return $resultPage;
             die("Admin Route");
         }
     }
