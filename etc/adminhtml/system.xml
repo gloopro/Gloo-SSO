@@ -14,7 +14,7 @@
 
                 <field id="active" translate="label comment" sortOrder="20" type="select" showInDefault="1" showInWebsite="1"
                        showInStore="1">
-                    <label>Enable SSO</label>
+                    <label>Enable Single Sign On</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
 
