@@ -10,9 +10,18 @@
 
 namespace Gloo\SSO\Controller;
 
+use Gloo\SSO\Auth\AuthTrait;
+use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Magento\Framework\App\Action\Action;
 
 abstract class Auth extends Action{
+    use AuthTrait;
+
+    const NAME = "name";
+    const FIRST_NAME = "first_name";
+    const LAST_NAME = "last_name";
+    const GENDER = "gender";
+    const EMAIL = "email";
 
     /**
      * @var  \League\OAuth2\Client\Provider\ProviderInterface
@@ -40,8 +49,9 @@ abstract class Auth extends Action{
         return $this->client;
     }
 
-    protected function authenticate(){
-
+    protected function authenticate(ResourceOwnerInterface $resourceOwner){
+        if(!$this->userEmailIsAssociated($resourceOwner->toArray()["email"])){
+            $this->createUserAccount($resourceOwner);
+        }
     }
-
 }

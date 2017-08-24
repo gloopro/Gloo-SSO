@@ -29,6 +29,12 @@
                 <field id="scopes" translate="label" type="text" sortOrder="31" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Scopes </label>
                 </field>
+
+
+                <field id="send_confirmation_email" translate="label" type="text" sortOrder="31" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Send Confirmation Email</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
             </group>
         </section>
     </system>
