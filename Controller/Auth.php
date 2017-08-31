@@ -10,27 +10,31 @@
 
 namespace Gloo\SSO\Controller;
 
-use Gloo\SSO\Auth\AuthTrait;
+use Gloo\SSO\Model\AuthInterface;
+use League\OAuth2\Client\Provider\AbstractProvider;
 use League\OAuth2\Client\Provider\ResourceOwnerInterface;
+use Magento\Customer\Model\Data\Customer;
 use Magento\Framework\App\Action\Action;
+use Magento\Framework\App\Action\Context;
 
 abstract class Auth extends Action{
-    use AuthTrait;
-
-    const NAME = "name";
-    const FIRST_NAME = "first_name";
-    const LAST_NAME = "last_name";
-    const GENDER = "gender";
-    const EMAIL = "email";
 
     /**
-     * @var  \League\OAuth2\Client\Provider\ProviderInterface
+     * @var  AbstractProvider
      */
     protected $client;
+
+    protected $authModel;
 
     private $code;
 
     abstract protected function initClient();
+
+    public function __construct(Context $context, AuthInterface $authModel)
+    {
+        $this->authModel  = $authModel;
+        parent::__construct($context);
+    }
 
     protected function getAccessCode(){
         if(!$this->code){
@@ -44,14 +48,15 @@ abstract class Auth extends Action{
         return $this->client->getAccessToken('authorization_code',['code'=>$accessCode]);
     }
 
-
     protected function getAuthClient(){
         return $this->client;
     }
 
-    protected function authenticate(ResourceOwnerInterface $resourceOwner){
-        if(!$this->userEmailIsAssociated($resourceOwner->toArray()["email"])){
-            $this->createUserAccount($resourceOwner);
-        }
+    protected function authenticate(Customer $customer){
+
+       if(!$this->authModel->userEmailIsAssociated($customer->getEmail())){
+           $this->authModel->createAccount($customer);
+       }
     }
+
 }

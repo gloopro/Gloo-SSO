@@ -11,9 +11,7 @@
             "email":"engineering@gloo.ng"
         }
     ],
-    "require": {
-        "league/oauth2-facebook": "^2.0"
-    },
+
     "autoload": {
         "files": [
             "registration.php"
