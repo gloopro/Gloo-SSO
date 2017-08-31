@@ -5,6 +5,9 @@
     "license": [
         "proprietary"
     ],
+    "require":{
+        "magento/module-customer":"100.1.*"
+    },
     "authors":[
         {
             "name":"David Umoh",

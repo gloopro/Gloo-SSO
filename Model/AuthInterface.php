@@ -8,7 +8,7 @@ interface AuthInterface{
 
     public function createAccount(Customer $customer);
 
-    public function login();
+    public function authenticate(Customer $customer);
 
     public function logout();
 
