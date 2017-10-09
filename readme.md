@@ -10,6 +10,10 @@ Then run `composer require gloo/module-sso`
 
 ## Releases Notes
 
+### v1.0.0
+ - Authentication of Customers based on Customer Object passed to the Authentication Method now possible.
+ - Account linking now handled by the Social Identity provider by passing data in the custom attribute property of Magento Customer Data Repository.
+
 ## Copyright
 
 (c) 2017 Gloo
