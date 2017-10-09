@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<config	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Backend:etc/menu.xsd">
+    <menu>
+        <add id="gloo::sso" title="Single Sign On"  module="Gloo_SSO" sortOrder="100" resource="Gloo_SSO::sso" />
+        <add id="Gloo_SSO::singleSignOn" title="Gloo SSO"
+             module="Gloo_SSO"
+             parent="gloo::sso" action="gloo_sso/singlesignon/index"
+             resource="Gloo_SSO::singleSignOn"/>
+    </menu>
+</config>
