@@ -11,8 +11,6 @@
 namespace Gloo\SSO\Controller;
 
 use Gloo\SSO\Model\AuthInterface;
-use League\OAuth2\Client\Provider\AbstractProvider;
-use League\OAuth2\Client\Provider\ResourceOwnerInterface;
 use Magento\Customer\Model\Data\Customer;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
@@ -104,7 +102,7 @@ abstract class Auth extends Action{
 
 
        }catch (UserLockedException $e){
-           $this->messageManager->addError($message);
+
            $message = __(
                'The account is locked. Please wait and try again or contact %1.',
                $this->getScopeConfig()->getValue('contact/email/recipient_email')
@@ -114,11 +112,12 @@ abstract class Auth extends Action{
 
        }catch (EmailNotConfirmedException $e){
 
-           $value = $this->customerUrl->getEmailConfirmationUrl($login['username']);
+           $value = $this->customerUrl->getEmailConfirmationUrl($customer->getEmail());
            $message = __(
                'This account is not confirmed. <a href="%1">Click here</a> to resend confirmation email.',
                $value
            );
+           $this->messageManager->addError($message);
            $this->session->setUsername($customer->getEmail());
        } catch (LocalizedException $e) {
            $message = $e->getMessage();
@@ -137,7 +136,6 @@ abstract class Auth extends Action{
     /**
      * Retrieve cookie manager
      *
-     * @deprecated
      * @return \Magento\Framework\Stdlib\Cookie\PhpCookieManager
      */
     private function getCookieManager()
@@ -153,7 +151,7 @@ abstract class Auth extends Action{
     /**
      * Retrieve cookie metadata factory
      *
-     * @deprecated
+     *
      * @return \Magento\Framework\Stdlib\Cookie\CookieMetadataFactory
      */
     private function getCookieMetadataFactory()
@@ -170,7 +168,7 @@ abstract class Auth extends Action{
      * Get scope config
      *
      * @return ScopeConfigInterface
-     * @deprecated
+     *
      */
     private function getScopeConfig()
     {
