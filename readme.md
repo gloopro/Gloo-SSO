@@ -10,13 +10,18 @@ Then run `composer require gloo/module-sso`
 
 ## Releases Notes
 
-### v1.0.0
+### v0.1.0
  - Authentication of Customers based on Customer Object passed to the Authentication Method now possible.
  - Account linking now handled by the Social Identity provider by passing data in the custom attribute property of Magento Customer Data Repository.
 
-### v1.0.1
+### v0.1.1
  - Fixed a bug where context object was not properly injected
  - Removed install schema as it is no longer required
+
+### v0.1.2
+ - Added ACL
+ - Fixed issue related to private data not refreshed when login is not a POST request
+
 ## Copyright
 
 (c) 2017 Gloo
