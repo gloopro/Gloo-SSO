@@ -11,6 +11,7 @@
 namespace Gloo\SSO\Controller;
 
 use Gloo\SSO\Model\AuthInterface;
+use Gloo\SSO\PageCache\Version;
 use Magento\Customer\Model\Data\Customer;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\App\Action\Context;
@@ -41,6 +42,11 @@ abstract class Auth extends Action{
     private $scopeConfig;
 
     private $code;
+
+    /**
+     * @var Version
+     */
+    private $version;
 
     abstract protected function initClient();
 
@@ -76,58 +82,59 @@ abstract class Auth extends Action{
 
     protected function authenticate(Customer $customer){
 
-       if(!$this->authModel->userEmailIsAssociated($customer->getEmail())){
-           $customer = $this->authModel->createAccount($customer);
-       }
-       try{
-           $this->authModel->authenticate($customer);
-           $this->session->setCustomerDataAsLoggedIn($customer);
-           $this->session->regenerateId();
-           if ($this->getCookieManager()->getCookie('mage-cache-sessid')) {
-               $metadata = $this->getCookieMetadataFactory()->createCookieMetadata();
-               $metadata->setPath('/');
-               $this->getCookieManager()->deleteCookie('mage-cache-sessid', $metadata);
-           }
-           $redirectUrl = $this->accountRedirect->getRedirectCookie();
-           if(!is_null($this->redirectUrl)){
-               $redirectUrl = $this->redirectUrl;
-           }
-           if (!$this->getScopeConfig()->getValue('customer/startup/redirect_dashboard') &&$redirectUrl) {
-               $this->accountRedirect->clearRedirectCookie();
-               $resultRedirect = $this->resultRedirectFactory->create();
-               // URL is checked to be internal in $this->_redirect->success()
-               $resultRedirect->setUrl($this->_redirect->success($redirectUrl));
-               return $resultRedirect;
-           }
+        if(!$this->authModel->userEmailIsAssociated($customer->getEmail())){
+            $customer = $this->authModel->createAccount($customer);
+        }
+        try{
+            $this->authModel->authenticate($customer);
+            $this->session->setCustomerDataAsLoggedIn($customer);
+            $this->session->regenerateId();
+            if ($this->getCookieManager()->getCookie('mage-cache-sessid')) {
+                $metadata = $this->getCookieMetadataFactory()->createCookieMetadata();
+                $metadata->setPath('/');
+                $this->getCookieManager()->deleteCookie('mage-cache-sessid', $metadata);
+            }
+            $this->getVersion()->process();
+            $redirectUrl = $this->accountRedirect->getRedirectCookie();
+            if(!is_null($this->redirectUrl)){
+                $redirectUrl = $this->redirectUrl;
+            }
+            if (!$this->getScopeConfig()->getValue('customer/startup/redirect_dashboard') &&$redirectUrl) {
+                $this->accountRedirect->clearRedirectCookie();
+                $resultRedirect = $this->resultRedirectFactory->create();
+                // URL is checked to be internal in $this->_redirect->success()
+                $resultRedirect->setUrl($this->_redirect->success($redirectUrl));
+                return $resultRedirect;
+            }
 
 
-       }catch (UserLockedException $e){
+        }catch (UserLockedException $e){
 
-           $message = __(
-               'The account is locked. Please wait and try again or contact %1.',
-               $this->getScopeConfig()->getValue('contact/email/recipient_email')
-           );
-           $this->messageManager->addError($message);
-           $this->session->setUsername($customer->getEmail());
+            $message = __(
+                'The account is locked. Please wait and try again or contact %1.',
+                $this->getScopeConfig()->getValue('contact/email/recipient_email')
+            );
+            $this->messageManager->addError($message);
+            $this->session->setUsername($customer->getEmail());
 
-       }catch (EmailNotConfirmedException $e){
+        }catch (EmailNotConfirmedException $e){
 
-           $value = $this->customerUrl->getEmailConfirmationUrl($customer->getEmail());
-           $message = __(
-               'This account is not confirmed. <a href="%1">Click here</a> to resend confirmation email.',
-               $value
-           );
-           $this->messageManager->addError($message);
-           $this->session->setUsername($customer->getEmail());
-       } catch (LocalizedException $e) {
-           $message = $e->getMessage();
-           $this->messageManager->addError($message);
-           $this->session->setUsername($customer->getEmail());
-       } catch (\Exception $e) {
-           $this->messageManager->addError(
-               __('An unspecified error occurred. Please contact us for assistance.')
-           );
-       }
+            $value = $this->customerUrl->getEmailConfirmationUrl($customer->getEmail());
+            $message = __(
+                'This account is not confirmed. <a href="%1">Click here</a> to resend confirmation email.',
+                $value
+            );
+            $this->messageManager->addError($message);
+            $this->session->setUsername($customer->getEmail());
+        } catch (LocalizedException $e) {
+            $message = $e->getMessage();
+            $this->messageManager->addError($message);
+            $this->session->setUsername($customer->getEmail());
+        } catch (\Exception $e) {
+            $this->messageManager->addError(
+                __('An unspecified error occurred. Please contact us for assistance.')
+            );
+        }
 
         return $this->accountRedirect->getRedirect();
 
@@ -179,6 +186,15 @@ abstract class Auth extends Action{
         } else {
             return $this->scopeConfig;
         }
+    }
+
+    private function getVersion(){
+        if(!$this->version){
+            $this->version = \Magento\Framework\App\ObjectManager::getInstance()->get(
+                Version::class
+            );
+        }
+        return $this->version;
     }
 
 }
