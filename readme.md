@@ -22,6 +22,8 @@ Then run `composer require gloo/module-sso`
  - Added ACL
  - Fixed issue related to private data not refreshed when login is not a POST request
 
+### v0.2.1
+ - Compatible with Magento 2.2.x branch
 ## Copyright
 
 (c) 2017 Gloo
